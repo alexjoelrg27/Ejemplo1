@@ -1,0 +1,150 @@
+##############################################################################
+#  CI/CD Pipeline - Pagina Cristiano Ronaldo
+#  -------------------------------------------------------
+#  Jobs:
+#    1. html-validation   -> HTML5 semantico (html-validate)
+#    2. accessibility     -> WCAG 2.1 AA + ARIA (Pa11y)
+#    3. responsive        -> Adaptabilidad / Responsividad (Playwright)
+#    4. link-security     -> Enlaces externos seguros HTTPS
+#    5. deploy            -> GitHub Pages (solo en push a main)
+##############################################################################
+
+name: CI/CD - Pruebas y Despliegue
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  # ======================================================
+  # Job 1: Validacion HTML5 Semantico
+  # ======================================================
+  html-validation:
+    name: "HTML5 Semantico"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Validar HTML5 semantico
+        run: npx html-validate paginaCristianoRonaldo/index.html
+
+  # ======================================================
+  # Job 2: Accesibilidad WCAG 2.1 AA + Atributos ARIA
+  # ======================================================
+  accessibility:
+    name: "WCAG 2.1 AA + ARIA"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Iniciar servidor local (puerto 3000)
+        run: |
+          npx serve ./paginaCristianoRonaldo -l 3000 &
+          sleep 4
+
+      - name: Ejecutar pruebas Pa11y (WCAG 2.1 AA)
+        run: |
+          npx pa11y \
+            --standard WCAG21AA \
+            --threshold 0 \
+            --timeout 30000 \
+            --reporter cli \
+            http://localhost:3000
+
+  # ======================================================
+  # Job 3: Adaptabilidad y Responsividad
+  # ======================================================
+  responsive:
+    name: "Adaptabilidad / Responsividad"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Instalar navegador Chromium (Playwright)
+        run: npx playwright install chromium
+
+      - name: Iniciar servidor local (puerto 3001)
+        run: |
+          npx serve ./paginaCristianoRonaldo -l 3001 &
+          sleep 4
+
+      - name: Ejecutar pruebas de responsividad
+        run: node tests/responsive-check.js
+
+  # ======================================================
+  # Job 4: Seguridad de Enlaces Externos (HTTPS)
+  # ======================================================
+  link-security:
+    name: "Enlaces Externos Seguros"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repositorio
+        uses: actions/checkout@v4
+
+      - name: Verificar que todos los enlaces usan HTTPS
+        run: node tests/link-check.js
+
+  # ======================================================
+  # Job 5: Despliegue en GitHub Pages
+  # (Solo se ejecuta si todos los tests pasan en main)
+  # ======================================================
+  deploy:
+    name: "Despliegue GitHub Pages"
+    needs: [html-validation, accessibility, responsive, link-security]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Subir artifact de la pagina
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./paginaCristianoRonaldo
+
+      - name: Desplegar en GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

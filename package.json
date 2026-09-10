@@ -1,0 +1,17 @@
+{
+  "name": "ejemplo1-cicd",
+  "version": "1.0.0",
+  "private": true,
+  "description": "CI/CD pipeline - Pagina Cristiano Ronaldo",
+  "scripts": {
+    "test:html": "html-validate paginaCristianoRonaldo/index.html",
+    "test:responsive": "node tests/responsive-check.js",
+    "test:links": "node tests/link-check.js"
+  },
+  "devDependencies": {
+    "html-validate": "^8.24.0",
+    "pa11y": "^8.0.3",
+    "playwright": "^1.48.0",
+    "serve": "^14.2.4"
+  }
+}

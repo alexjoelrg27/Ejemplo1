@@ -1,0 +1,19 @@
+{
+  "extends": [
+    "html-validate:recommended"
+  ],
+  "rules": {
+    "require-sri": "off",
+    "meta-description": "off",
+    "no-trailing-whitespace": "warn",
+    "attribute-quotes": "error",
+    "no-dup-attr": "error",
+    "no-unknown-elements": "error",
+    "no-obsolete-elements": "error",
+    "no-dup-class": "error",
+    "element-required-attributes": "warn",
+    "no-empty-heading": "error",
+    "no-empty-title": "error",
+    "no-missing-references": "off"
+  }
+}
