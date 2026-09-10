@@ -37,10 +37,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "npm"
 
       - name: Instalar dependencias
-        run: npm ci
+        run: npm install
 
       - name: Validar HTML5 semantico
         run: npx html-validate paginaCristianoRonaldo/index.html
@@ -59,10 +58,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "npm"
 
       - name: Instalar dependencias
-        run: npm ci
+        run: npm install
 
       - name: Iniciar servidor local (puerto 3000)
         run: |
@@ -92,10 +90,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "npm"
 
       - name: Instalar dependencias
-        run: npm ci
+        run: npm install
 
       - name: Instalar navegador Chromium (Playwright)
         run: npx playwright install chromium

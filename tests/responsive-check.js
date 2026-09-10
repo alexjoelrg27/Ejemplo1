@@ -57,6 +57,7 @@ async function runResponsiveTests() {
           hasSkipLink:         !!document.querySelector('a[href="#contenido-principal"]'),
           hasViewportMeta:     !!document.querySelector('meta[name="viewport"]'),
           hasLangAttr:         document.documentElement.lang !== '',
+          lang:                document.documentElement.lang || 'none',
         };
       });
 
@@ -75,7 +76,7 @@ async function runResponsiveTests() {
 
       // Validar estructura semantica en cada viewport
       console.log(`  Estructura: header=${result.hasHeader} nav=${result.hasNav} main=${result.hasMain} footer=${result.hasFooter}`);
-      console.log(`  Secciones: ${result.sectionsCount} | Skip Link: ${result.hasSkipLink} | lang="${document.documentElement.lang || ''}"`);
+      console.log(`  Secciones: ${result.sectionsCount} | Skip Link: ${result.hasSkipLink} | lang="${result.lang}"`);
 
     } catch (err) {
       console.log(`[${vp.name}] ERROR: ${err.message}`);
